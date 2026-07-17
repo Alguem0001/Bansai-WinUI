@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BonsaiWinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "BonsaiWinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

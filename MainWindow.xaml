@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="BonsaiWinUI.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Bansai"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource InkBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Custom title bar strip -->
+        <Grid x:Name="AppTitleBar" Background="{StaticResource CharcoalBrush}" BorderBrush="{StaticResource EdgeBrush}" BorderThickness="0,0,0,1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Spacing="10" Margin="14,0,0,0" VerticalAlignment="Center">
+                <Border Width="8" Height="8" CornerRadius="4" Background="{StaticResource CopperBrush}" />
+                <TextBlock Text="BANSAI" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource ParchmentBrush}"
+                           CharacterSpacing="80" VerticalAlignment="Center" />
+                <TextBlock Text="·" Foreground="{StaticResource AshDimBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="local runtime" FontSize="12" Foreground="{StaticResource AshBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Padding="24,20,24,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="360" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="340" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT: main controls -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="14" MaxWidth="720">
+
+                    <!-- Status pill -->
+                    <Border Background="{StaticResource StoneBrush}" BorderBrush="{StaticResource EdgeBrush}"
+                            BorderThickness="1" CornerRadius="10" Padding="14,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="StatusDot" Width="10" Height="10" CornerRadius="5"
+                                    Background="{StaticResource AshDimBrush}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <StackPanel Grid.Column="1" Spacing="2">
+                                <TextBlock x:Name="StatusTitle" Text="Parado" FontWeight="SemiBold"
+                                           Foreground="{StaticResource ParchmentBrush}" FontSize="14" />
+                                <TextBlock x:Name="StatusMessage" Text="Selecione um modelo e inicie o servidor"
+                                           Foreground="{StaticResource AshBrush}" FontSize="12" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Paths card -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="PATHS" Style="{StaticResource LabelStyle}" />
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="llama-server folder" Foreground="{StaticResource AshBrush}" FontSize="12" />
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="LlamaBinBox" FontFamily="Cascadia Mono, Consolas" FontSize="12" />
+                                    <Button Grid.Column="1" Content="Browse" Style="{StaticResource QuietButtonStyle}" Click="BrowseLlamaBin_Click" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Models folder" Foreground="{StaticResource AshBrush}" FontSize="12" />
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ModelsDirBox" FontFamily="Cascadia Mono, Consolas" FontSize="12" />
+                                    <Button Grid.Column="1" Content="Browse" Style="{StaticResource QuietButtonStyle}" Click="BrowseModelsDir_Click" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Model card -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="MODEL" Style="{StaticResource LabelStyle}" />
+                            <ComboBox x:Name="LocalModelCombo" HorizontalAlignment="Stretch"
+                                      PlaceholderText="Select a .gguf…" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="Refresh" Style="{StaticResource GhostButtonStyle}" Click="RefreshModels_Click" />
+                                <Button Content="Import…" Style="{StaticResource PrimaryButtonStyle}" Click="ImportModel_Click"
+                                        ToolTipService.ToolTip="Copia um .gguf para a pasta de models" />
+                                <Button Content="Use path…" Style="{StaticResource GhostButtonStyle}" Click="BrowseGguf_Click"
+                                        ToolTipService.ToolTip="Usa um .gguf sem copiar (aponta para a pasta dele)" />
+                                <Button Content="Open folder" Style="{StaticResource QuietButtonStyle}" Click="OpenModelsFolder_Click" />
+                            </StackPanel>
+
+                            <Border Height="1" Background="{StaticResource EdgeBrush}" Margin="0,4" />
+
+                            <TextBlock Text="DOWNLOAD (HUGGING FACE)" Style="{StaticResource LabelStyle}" />
+                            <ComboBox x:Name="CatalogCombo" HorizontalAlignment="Stretch" />
+                            <Button Content="Download catalog" Style="{StaticResource QuietButtonStyle}"
+                                    HorizontalAlignment="Left" Click="DownloadCatalog_Click" />
+
+                            <TextBlock Text="CUSTOM HF" Style="{StaticResource LabelStyle}" Margin="0,6,0,0" />
+                            <TextBox x:Name="HfRepoBox" Header="repo" PlaceholderText="org/model-name" FontFamily="Cascadia Mono, Consolas" FontSize="12" />
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="HfFileBox" Grid.Column="0" Header="file.gguf" PlaceholderText="model.gguf" FontFamily="Cascadia Mono, Consolas" FontSize="12" />
+                                <TextBox x:Name="HfMmprojBox" Grid.Column="1" Header="mmproj (opt.)" PlaceholderText="mmproj.gguf" FontFamily="Cascadia Mono, Consolas" FontSize="12" />
+                            </Grid>
+                            <Button Content="Download custom" Style="{StaticResource QuietButtonStyle}"
+                                    HorizontalAlignment="Left" Click="DownloadCustom_Click" />
+
+                            <ProgressBar x:Name="DownloadProgress" IsIndeterminate="True" Visibility="Collapsed"
+                                         Foreground="{StaticResource CopperBrush}" Background="{StaticResource EdgeBrush}" />
+                            <TextBlock x:Name="DownloadStatus" Foreground="{StaticResource AshBrush}" FontSize="12" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Server options -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="SERVER" Style="{StaticResource LabelStyle}" />
+                            <Grid ColumnSpacing="10" RowSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="HostBox" Grid.Column="0" Header="Host" Text="127.0.0.1" />
+                                <NumberBox x:Name="PortBox" Grid.Column="1" Header="Port" Value="8080"
+                                           Minimum="1" Maximum="65535" SpinButtonPlacementMode="Compact" />
+                                <NumberBox x:Name="CtxBox" Grid.Column="2" Header="Context" Value="8192"
+                                           Minimum="512" Maximum="262144" SpinButtonPlacementMode="Compact" />
+                                <NumberBox x:Name="NglBox" Grid.Column="3" Header="GPU layers" Value="99"
+                                           Minimum="0" Maximum="999" SpinButtonPlacementMode="Compact" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleSwitch x:Name="ToolsToggle" Grid.Column="0" Header="Tools" IsOn="True"
+                                              OffContent="Off" OnContent="On" />
+                                <ToggleSwitch x:Name="JinjaToggle" Grid.Column="1" Header="Jinja" IsOn="True"
+                                              OffContent="Off" OnContent="On" />
+                                <ToggleSwitch x:Name="VisionToggle" Grid.Column="2" Header="Vision" IsOn="True"
+                                              OffContent="Off" OnContent="On" />
+                            </Grid>
+
+                            <TextBox x:Name="ExtraArgsBox" Header="Extra args"
+                                     PlaceholderText="optional flags" FontFamily="Cascadia Mono, Consolas" FontSize="12" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Actions -->
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button x:Name="StartButton" Content="Start  ·  WebUI" Style="{StaticResource PrimaryButtonStyle}"
+                                Click="Start_Click" MinWidth="160" Height="42" />
+                        <Button x:Name="StopButton" Content="Stop" Style="{StaticResource GhostButtonStyle}"
+                                Click="Stop_Click" IsEnabled="False" MinWidth="88" Height="42" />
+                        <Button Content="Open UI" Style="{StaticResource QuietButtonStyle}"
+                                Click="OpenWebUi_Click" MinWidth="96" Height="42" />
+                        <Button Content="Save" Style="{StaticResource QuietButtonStyle}"
+                                Click="SaveConfig_Click" MinWidth="80" Height="42" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- RIGHT: log panel -->
+            <Border Grid.Column="2" Style="{StaticResource CardStyle}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Border Padding="16,14" BorderBrush="{StaticResource EdgeBrush}" BorderThickness="0,0,0,1"
+                            Background="{StaticResource StoneRaisedBrush}">
+                        <TextBlock Text="CONSOLE" Style="{StaticResource LabelStyle}" />
+                    </Border>
+                    <TextBox
+                        x:Name="LogBox"
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        IsReadOnly="True"
+                        TextWrapping="Wrap"
+                        FontFamily="Cascadia Mono, Consolas"
+                        FontSize="11"
+                        Foreground="{StaticResource AshBrush}"
+                        Background="{StaticResource CharcoalBrush}"
+                        BorderThickness="0"
+                        Padding="14,12"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
